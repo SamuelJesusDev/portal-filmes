@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="banner-main"></div>
-    <div class="list-movie">
+    <div class="list-movie d-flex flex-column align-items-center">
         <div class="d-flex justify-content-center align-items-center row">
           <div
             class="card card-movie m-2"
@@ -11,27 +11,26 @@
           <NuxtLink :to="'/item/' + movie.id + '-' + slugify(movie.title)">
             <img
               :src="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+              style="max-width: 160px"
               class=""
               alt=""
             />
             <div class="overlay">
               <div class="d-flex gap-1 mb-auto">
-                <h6><span class="badge badge-primary mr-2">DUB</span></h6>
-                <h6><span class="badge badge-dark">HD</span></h6>
+                <h6><span class="badge badge-primary mr-2">{{movie.original_language.toUpperCase()}}</span></h6>
               </div>
               <div class="d-flex flex-column movie-info">
-                <p class="title mb-0">{{ movie.title }}</p>
-                <StarsVote :quantidade="movie.vote_average" />
-                <div class="d-flex justify-content-between w-100">
-                  <p>2025</p>
-                  <p>120 min</p>
+                <p class="title mb-0">{{ movie.title }}</p>                
+                <div class="d-flex align-items-center justify-content-between w-100">
+                  <p class="mb-0">{{movie?.release_date.split('-')[0]}}</p>
+                  <StarsVote :quantidade="movie.vote_average" />
                 </div>
               </div>
             </div>
             </NuxtLink>
           </div>
         </div>
-        <nav class="mt-4 d-flex justify-content-center">
+        <nav class="mt-4 d-flex justify-content-center mt-auto" v-if="totalPages >1">
           <ul class="pagination">
             <li class="page-item" :class="{ disabled: page === 1 }">
               <button
@@ -66,6 +65,15 @@
 </template>
 
 <script setup>
+useHead({
+  title: 'Home - Catálogo de Filmes',
+  meta: [
+    { name: 'description', content: 'Explore os filmes populares, lançamentos e recomendações.' },
+    { property: 'og:title', content: 'Catálogo de Filmes' },
+    { property: 'og:description', content: 'Os melhores filmes disponíveis para você.' },
+    { property: 'og:type', content: 'website' },
+  ]
+})
 const page = ref(1);
 const totalPages = ref(0);
 
@@ -83,7 +91,7 @@ const {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwY2ZmMDQ5MDMyMzk5ZGU0MGQwYjNlNjMyMTJlYjIzMCIsIm5iZiI6MTc1MjkyNDIyOC40NTIsInN1YiI6IjY4N2I4MDQ0MTczM2RhMzhkMjUyODY2NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.yFmP9mray8n8eEixPNsMYcsTaFde_wHaZYlSHK9Rmj8",
+            "Bearer tokenlogin",
         },
       }
     );
@@ -136,6 +144,7 @@ function slugify(text) {
 
 .card-movie img {
   width: 100%;
+  height: 240px;
   display: block;
   border-radius: 10px;
 }
