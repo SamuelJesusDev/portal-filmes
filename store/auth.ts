@@ -32,9 +32,6 @@ export const useAuthStore = defineStore('auth', () => {
     if (process.client) {
       localStorage.removeItem('token')
     }
-    if (route.path === '/favoritos') {
-      await router.push('/login')
-    }
   }
 
   return {

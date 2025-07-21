@@ -1,43 +1,70 @@
 <template>
-    <div class="d-flex flex-column flex-md-row img-movie"   
+    <div class="d-flex flex-column flex-md-row img-movie"
         :style="{
           'background-image': 'url(\'https://image.tmdb.org/t/p/original' + response.backdrop_path + '\')',
           'background-size': 'cover',
           'background-position': 'center',
           'box-shadow': '100px -100px 100px 100px rgba(34, 60, 80, 0.96) inset'
         }">
+        <NuxtImg
+          :src="'https://image.tmdb.org/t/p/w500' + response.backdrop_path"
+          width="auto"
+          height="auto"
+          format="webp"
+          loading="lazy"
+          alt="Capa do filme"
+          class="d-md-none rounded pt-4"
+        />
         <div class="col-lg-8 px-md-5 mx-md-5 mt-auto mb-5 ">
-            <h1 style="text-shadow: 2px 2px 4px black;">{{ response.title}}</h1>
-            <StarsVote :quantidade="response.vote_average" />            
-            <p class="description pb-2 mt-3">{{response.overview}}</p>
-            <div class="d-flex type-movie align-items-center mb-2">
-                <p v-for="(genre, index) in response.genres" :key="genre.id" class="mb-0">
-                    {{ genre.name }}<span v-if="index < response.genres.length - 1" class="mx-3"> | </span>
-                </p>
-                <div class="circle-favorite d-flex justify-content-center align-items-center ml-3 p-2" @click="handleAddFavorite(response)" v-if="!favoritosStore.isFavorite(Number(idMovie))">
-                  <FontAwesomeIcon icon="fa-solid fa-plus" /> <span class="ml-2">Adcionar aos favoritos</span> 
-                </div>
-                <div class="circle-favorite d-flex justify-content-center align-items-center ml-3 p-2" @click="favoritosStore.removeFavorite(Number(idMovie))" v-else>
-                  <FontAwesomeIcon icon="fas fa-trash" /> <span class="ml-2">Remover dos favoritos</span> 
-                </div>
+            <div class="d-flex flex-md-column justify-content-start align-items-start pt-3 pb-3 pb-md-0 star">
+              <button @click="goBack" class="btn btn-secondary mr-3 px-4">
+                <ClientOnly>
+                  <FontAwesomeIcon icon="fas fa-long-arrow-alt-left" /> Voltar
+                </ClientOnly>
+              </button>
+              <ClientOnly>
+                <StarsVote :quantidade="response.vote_average" />
+              </ClientOnly>
             </div>
-            <div class="d-flex align-items-center gap-3">
-              <p class="names mb-0"><strong>Produtoras: </strong></p>
-              <template v-for="(img, index) in response?.production_companies" :key="index">
-                <div
-                  v-if="img?.logo_path"
-                  class="col-auto d-flex justify-content-center align-items-center ml-2"
-                  style="background: #f2f5f9; border-radius: 8px; height: 41px"
-                >
-                  <img
-                    :src="'https://image.tmdb.org/t/p/w500' + img.logo_path"
-                    :alt="img.name"
-                    style="max-width: 60px; max-height: 39px;"
-                    class="img-fluid"
-                    loading="lazy"
-                  />
+            <h1 class="title" style="text-shadow: 2px 2px 4px black;">{{ response.title}}</h1>            
+            <p class="description text-justify pb-2 mt-3">{{response.overview}}</p>
+            <div class="d-flex flex-column flex-md-row type-movie align-items-md-center mb-2">
+                <div class="d-flex align-items-center mb-2">
+                  <p v-for="(genre, index) in response.genres" :key="genre.id" class="mb-0">
+                      {{ genre.name }}<span v-if="index < response.genres.length - 1" class="mx-3"> | </span>
+                  </p>
                 </div>
-              </template>
+                <div class="circle-favorite d-flex justify-content-center align-items-center ml-md-3 p-2" @click="handleAddFavorite(response)" v-if="!favoritosStore.isFavorite(Number(idMovie))">
+                  <ClientOnly>
+                    <FontAwesomeIcon icon="fa-solid fa-plus" /> <span class="ml-2">Adcionar aos favoritos</span> 
+                  </ClientOnly>
+                </div>
+                <div class="circle-favorite d-flex justify-content-center align-items-center ml-md-3 p-2" @click="favoritosStore.removeFavorite(Number(idMovie))" v-else>
+                  <ClientOnly>
+                    <FontAwesomeIcon icon="fas fa-trash" /> <span class="ml-2">Remover dos favoritos</span> 
+                  </ClientOnly>
+                </div>                
+            </div>
+            <div class="d-flex flex-column flex-md-row align-items-center gap-3">
+              <p class="names mb-0"><strong>Produtoras: </strong></p>
+              <div class="d-flex justify-content-center row ml-md-3">
+                <template v-for="(img, index) in response?.production_companies" :key="index">
+                  <div
+                    v-if="img?.logo_path"
+                    class="col-auto d-flex justify-content-center align-items-center ml-2 mb-2"
+                    style="background: #f2f5f9; border-radius: 8px; height: 41px"
+                  >
+                  <NuxtImg
+                    :src="'https://image.tmdb.org/t/p/w500' + img.logo_path"
+                    width="60"
+                    height="39"
+                    format="webp"
+                    loading="lazy"
+                    :alt="img.name"
+                  />
+                  </div>
+                </template>
+              </div>
             </div>
             <p class="names mb-0"><strong>Orçamento: </strong> {{ formatCurrency(response?.budget) }}</p>
             <p class="names mb-0"><strong>Duração: </strong> <span class="badge badge-dark" >{{response?.runtime}} min.</span><a v-if="response.homepage" :href="response.homepage" target="_blank"> Site oficial</a></p>
@@ -47,13 +74,11 @@
 
 <script setup>
 import { useFavoritosStore } from '~/store/favoritos'
-import { useApiTokenStore } from '~/store/apiToken'
 const route = useRoute();
 const idParams = computed(()=>route.params.id);
 const idMovie = computed(() => idParams.value.split('-')[0] || '')
 const favoritosStore = useFavoritosStore()
-const apiTokenStore = useApiTokenStore()
-const tokenApi = apiTokenStore.token
+const config = useRuntimeConfig()
 const {
   data: response,
   pending,
@@ -68,7 +93,7 @@ const {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer "+ tokenApi.value,
+            "Bearer "+ config.public.TMDB_TOKEN,
         },
       }
     );
@@ -109,7 +134,7 @@ async function addFavorite1() {
         method: 'POST',
         headers: {
           Authorization:
-            'Bearer '+ tokenApi,
+            'Bearer '+ config.public.TMDB_TOKEN,
         },
         body: {
           media_type: 'movie',
@@ -131,13 +156,16 @@ function formatCurrency(value) {
       maximumFractionDigits: 0
     }).format(value)
   }
+const goBack = () => {
+  window.history.back()
+}
 </script>
 
 <style scoped>
 h1{
-    font-size: 38px;
-    font-weight: 700;
-    color: #FFFFFF;
+  font-size: clamp(21px, 5vw, 38px);
+  font-weight: 700;
+  color: #FFFFFF;
 }
 h6{
     font-size: 14px;
@@ -146,7 +174,7 @@ h6{
     text-shadow: 2px 2px 4px black;
 }
 .description{
-    font-size: 20px;
+    font-size: clamp(15px, 2,5vw,20px);
     font-weight: 500;
     color: #FFFFFF;
     text-shadow: 2px 2px 4px black;
