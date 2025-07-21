@@ -1,27 +1,22 @@
 <template>
 <nav class="navbar navbar-expand-lg py-3">
     <a class="navbar-brand" href="#"><img src="~/assets/images/logo.png" alt="logo" class="w-75" style="max-height: 71px;"></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button @click="show = !show;" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <img src="" alt="icon">
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse" :class="{'show': show}" id="navbarSupportedContent">
         <ul class="navbar-nav">
-            <li class="nav-item pl-md-3">
+            <li class="nav-item pl-md-3" @click="show = false;">
                 <NuxtLink class="btn btn-purple px-lg-3" to="/" style="cursor: pointer;"> Início</NuxtLink>
             </li>
-            <li class="nav-item">
-                <NuxtLink class="nav-link" to="/">Filmes</NuxtLink>
-            </li>
-            <li class="nav-item">
+            <li class="nav-item" @click="show = false;" v-if="authStore.isLoggedIn">
                 <NuxtLink class="nav-link" to="/favoritos">Favoritos</NuxtLink>
-            </li>            
-            <li class="nav-item" v-if="token?.value">
-                <div class="circle-favorite d-flex justify-content-center align-items-center ml-3">
-                    <FontAwesomeIcon icon="fas fa-user" />
-                </div>
+            </li> 
+            <li class="nav-item login" v-if="authStore.isLoggedIn" @click="authStore.logout()">
+              <a class="nav-link"> Sair </a>
             </li>
-            <li class="nav-item" v-else>
+            <li class="nav-item login" v-else @click="show = false;">
                 <NuxtLink class="nav-link" to="/login">Login</NuxtLink>
             </li>
         </ul>
@@ -29,8 +24,16 @@
 </nav>
 </template>
 
-<script>
+<script setup>
+import { useAuthStore } from '~/store/auth'
+import { ref, onMounted } from 'vue'
+const show = ref(false)
+const token = ref(null)
+const authStore  = useAuthStore()
 
+onMounted(() => {
+  token.value = localStorage.getItem('token')
+})
 </script>
 
 <style scoped>
@@ -45,16 +48,14 @@ nav ul li a:hover{
     background: #ffffff;
     border-radius: 8px;
 }
-.circle-favorite{
+.login a{
     cursor: pointer;
-    border-radius: 100%;
+    border-radius: 8px;
     background: #ffffff;
-    width: 50px;
-    height: 50px;
-    font-size: 30px;
+    color: #000000;
 }
-.circle-favorite:hover{
-    border: solid 4px #a8303033;
+.login:hover a{
+    opacity: 0.8;
     color: #000000;
 }
 </style>

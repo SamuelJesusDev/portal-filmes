@@ -1,11 +1,10 @@
-const usertoken = 'ZmlsbXNpdGUtdG9rZW4tMTIzNDU2';
+import { useAuthStore } from '~/store/auth'
 export default defineNuxtRouteMiddleware((to, from) =>{
-    if (process.client) {
-        const tokenLogado = localStorage.getItem('token')
-        const protectedRoutes = ['/favoritos']
-
-        if (protectedRoutes.includes(to.path) && usertoken !== tokenLogado) {
+    const auth = useAuthStore()
+    auth.init()
+    const protectedRoutes = ['/favoritos']
+    
+    if (!auth.isLoggedIn && protectedRoutes.includes(to.path)) {
         return navigateTo('/login')
-        }
     }
 });

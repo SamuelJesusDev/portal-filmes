@@ -7,4 +7,11 @@ export default defineNuxtConfig({
   alias:{
     css: '/<rootDir>/assets/css',
   },
+  modules: [
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt'
+  ],
+  pinia:{
+    storesDirs:['./stores/**']
+  }
 })

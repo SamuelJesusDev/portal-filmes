@@ -1,33 +1,40 @@
 <template>
   <div class="container">
-    <div class="banner-main"></div>
+    <div class="container-main d-flex justify-content-center">
+      <h2>Meus Favoritos</h2>
+      <div v-if="favoritos.length === 0">
+        <p>Você ainda não adicionou nenhum filme aos favoritos.</p>
+      </div>
+    </div>
+    
     <div class="list-movie d-flex flex-column align-items-center">
         <div class="d-flex justify-content-center align-items-center row">
           <div
             class="card card-movie m-2"
-            v-for="(movie, index) in response.results"
+            v-for="(movie, index) in favoritosStore.favoritos"
             :key="index"
           >
           <NuxtLink :to="'/item/' + movie.id + '-' + slugify(movie.title)">
             <img
               :src="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-              class=""
-              alt=""
+              style="max-width: 160px"
+              loading="lazy"              
             />
             <div class="overlay">
               <div class="d-flex gap-1 mb-auto">
-                <h6><span class="badge badge-primary mr-2">DUB</span></h6>
-                <h6><span class="badge badge-dark">HD</span></h6>
+                <h6><span class="badge badge-primary mr-2">{{movie.original_language.toUpperCase()}}</span></h6>
               </div>
               <div class="d-flex flex-column movie-info">
-                <p class="title mb-0">{{ movie.title }}</p>
-                <StarsVote :quantidade="movie.vote_average" />
-                <div class="d-flex justify-content-between w-100">
-                  <p>2025</p>
-                  <p>120 min</p>
+                <p class="title mb-0">{{ movie.title }}</p>                
+                <div class="d-flex align-items-center justify-content-between w-100 mb-4">
+                  <p class="mb-0">{{movie?.release_date.split('-')[0]}}</p>
+                  <StarsVote :quantidade="movie.vote_average" />
                 </div>
               </div>
             </div>
+            <button @click.stop.prevent="removeFavorite(movie.id)" class="btn btn-danger btn-sm remove-button">
+              Remover
+            </button>
             </NuxtLink>
           </div>
         </div>
@@ -66,6 +73,8 @@
 </template>
 
 <script setup>
+import { useApiTokenStore } from '~/store/apiToken'
+import { useFavoritosStore } from '~/store/favoritos'
 useHead({
   title: 'Meus Favoritos - Catálogo de Filmes',
   meta: [
@@ -77,6 +86,10 @@ useHead({
 })
 const page = ref(1);
 const totalPages = ref(0);
+const favoritosStore = useFavoritosStore();
+const apiTokenStore = useApiTokenStore()
+const tokenApi = apiTokenStore.token
+const { favoritos, removeFavorite } = favoritosStore
 
 const {
   data: response,
@@ -87,12 +100,12 @@ const {
   "favorite-list",
   async () => {
     const res = await $fetch(
-      "https://api.themoviedb.org/3/account/userid/favorite/movies?language=pt-BR&sort_by=created_at.asc&page=" + page.value,
+      "https://api.themoviedb.org/3/account/"+favoritosStore.userToken.value+"/favorite/movies?language=pt-BR&sort_by=created_at.asc&page=" + page.value,
       {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer tokenlogin",
+            "Bearer " + tokenApi.value,
         },
       }
     );
@@ -171,5 +184,12 @@ function slugify(text) {
 }
 .card-movie:hover .movie-info {
   transform: translateY(-8px);
+}
+.container-main{
+   color: white;
+}
+.remove-button{
+  position: relative;
+  width: 100%;
 }
 </style>

@@ -19,6 +19,9 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '~/store/auth'
 useHead({
   title: 'Login',
   meta: [
@@ -29,13 +32,14 @@ useHead({
 const username = ref('')
 const password = ref('')
 const router = useRouter()
+const auth = useAuthStore()
 const isValid = ref(true)
 
 function handleLogin() {
   if (username.value === 'admin' && password.value === '123') {
     const loginToken = 'ZmlsbXNpdGUtdG9rZW4tMTIzNDU2'
-    localStorage.setItem('token', loginToken)
     isValid.value = true
+    auth.login(loginToken)
     router.push('/')
   } else {
     isValid.value = false

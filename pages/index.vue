@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <div class="banner-main"></div>
+    <div class="container-main text-center">
+      <h2 class="mb-3">Filmes em Destaque</h2>
+      <p class="col-md-8 mx-auto">
+      Veja informações rápidas sobre os filmes: título, ano de lançamento, idioma original, nota média e uma breve descrição. Clique em qualquer filme para ver os detalhes completos.
+      </p>
+    </div>
     <div class="list-movie d-flex flex-column align-items-center">
         <div class="d-flex justify-content-center align-items-center row">
           <div
@@ -12,8 +17,7 @@
             <img
               :src="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
               style="max-width: 160px"
-              class=""
-              alt=""
+              loading="lazy"
             />
             <div class="overlay">
               <div class="d-flex gap-1 mb-auto">
@@ -65,6 +69,10 @@
 </template>
 
 <script setup>
+import { useApiTokenStore } from '~/store/apiToken'
+
+const apiTokenStore = useApiTokenStore()
+const tokenApi = apiTokenStore.token
 useHead({
   title: 'Home - Catálogo de Filmes',
   meta: [
@@ -91,7 +99,7 @@ const {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer tokenlogin",
+            "Bearer " + tokenApi.value,
         },
       }
     );
@@ -102,7 +110,7 @@ const {
     watch: [page],
   }
 );
-const maxVisiblePages = 10;
+const maxVisiblePages = 5;
 const visiblePages = computed(() => {
   const startGroup =
     Math.floor((page.value - 1) / maxVisiblePages) * maxVisiblePages + 1;
@@ -171,5 +179,8 @@ function slugify(text) {
 }
 .card-movie:hover .movie-info {
   transform: translateY(-8px);
+}
+.container-main{
+  color: white;
 }
 </style>

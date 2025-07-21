@@ -1,12 +1,12 @@
 <template>
     <div class="d-flex flex-column flex-md-row img-movie"   
         :style="{
-            'background-image': 'url(\'https://image.tmdb.org/t/p/original' + response.backdrop_path + '\')',
-            'background-size': 'cover',
-            'background-position': 'center',
-            'box-shadow': '100px -100px 100px 100px rgba(34, 60, 80, 0.96) inset'
+          'background-image': 'url(\'https://image.tmdb.org/t/p/original' + response.backdrop_path + '\')',
+          'background-size': 'cover',
+          'background-position': 'center',
+          'box-shadow': '100px -100px 100px 100px rgba(34, 60, 80, 0.96) inset'
         }">
-        <div class="col-lg-8 px-5 mx-5 mt-auto mb-5">
+        <div class="col-lg-8 px-md-5 mx-md-5 mt-auto mb-5 ">
             <h1 style="text-shadow: 2px 2px 4px black;">{{ response.title}}</h1>
             <StarsVote :quantidade="response.vote_average" />            
             <p class="description pb-2 mt-3">{{response.overview}}</p>
@@ -14,10 +14,13 @@
                 <p v-for="(genre, index) in response.genres" :key="genre.id" class="mb-0">
                     {{ genre.name }}<span v-if="index < response.genres.length - 1" class="mx-3"> | </span>
                 </p>
-                <div class="circle-favorite d-flex justify-content-center align-items-center ml-3" @click="addFavorite">
-                    <FontAwesomeIcon icon="fa-solid fa-plus" />
+                <div class="circle-favorite d-flex justify-content-center align-items-center ml-3 p-2" @click="handleAddFavorite(response)" v-if="!favoritosStore.isFavorite(Number(idMovie))">
+                  <FontAwesomeIcon icon="fa-solid fa-plus" /> <span class="ml-2">Adcionar aos favoritos</span> 
                 </div>
-            </div>            
+                <div class="circle-favorite d-flex justify-content-center align-items-center ml-3 p-2" @click="favoritosStore.removeFavorite(Number(idMovie))" v-else>
+                  <FontAwesomeIcon icon="fas fa-trash" /> <span class="ml-2">Remover dos favoritos</span> 
+                </div>
+            </div>
             <div class="d-flex align-items-center gap-3">
               <p class="names mb-0"><strong>Produtoras: </strong></p>
               <template v-for="(img, index) in response?.production_companies" :key="index">
@@ -31,6 +34,7 @@
                     :alt="img.name"
                     style="max-width: 60px; max-height: 39px;"
                     class="img-fluid"
+                    loading="lazy"
                   />
                 </div>
               </template>
@@ -42,10 +46,14 @@
 </template>
 
 <script setup>
+import { useFavoritosStore } from '~/store/favoritos'
+import { useApiTokenStore } from '~/store/apiToken'
 const route = useRoute();
 const idParams = computed(()=>route.params.id);
 const idMovie = computed(() => idParams.value.split('-')[0] || '')
-
+const favoritosStore = useFavoritosStore()
+const apiTokenStore = useApiTokenStore()
+const tokenApi = apiTokenStore.token
 const {
   data: response,
   pending,
@@ -60,7 +68,7 @@ const {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer tokenlogin",
+            "Bearer "+ tokenApi.value,
         },
       }
     );
@@ -79,16 +87,29 @@ watchEffect(() => {
     })
   }
 })
+function handleAddFavorite() {
+  if (!response.value) return
 
-async function addFavorite() {
+  const movie = {
+    id: response.value.id,
+    title: response.value.title,
+    poster_path: response.value.poster_path,
+    original_language: response.value.original_language,
+    release_date: response.value.release_date,
+    vote_average: response.value.vote_average,
+  }
+
+  favoritosStore.addFavorite(movie)
+}
+async function addFavorite1() {
   try {
     const result = await $fetch(
-      'https://api.themoviedb.org/3/account/userid/favorite',
+      'https://api.themoviedb.org/3/account/'+favoritosStore.userToken+'/favorite',
       {
         method: 'POST',
         headers: {
           Authorization:
-            'Bearer tokenlogin',
+            'Bearer '+ tokenApi,
         },
         body: {
           media_type: 'movie',
@@ -168,11 +189,13 @@ h6{
 }
 .circle-favorite{
     cursor: pointer;
-    border-radius: 100%;
+    border-radius: 8px;
     background: #ffffff33;
-    width: 50px;
-    height: 50px;
-    font-size: 30px;
+    font-size: 25px;
+}
+.circle-favorite span{
+  font-size: 15px;
+  text-shadow: none
 }
 .circle-favorite:hover{
     background: #ffffff;
