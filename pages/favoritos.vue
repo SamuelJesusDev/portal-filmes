@@ -101,7 +101,7 @@ const {
   "favorite-list",
   async () => {
     const res = await $fetch(
-      "https://api.themoviedb.org/3/account/"+favoritosStore.userToken.value+"/favorite/movies?language=pt-BR&sort_by=created_at.asc&page=" + page.value,
+      config.public.BASE_URL +"/3/account/"+favoritosStore.userToken.value+"/favorite/movies?language=pt-BR&sort_by=created_at.asc&page=" + page.value,
       {
         method: "GET",
         headers: {

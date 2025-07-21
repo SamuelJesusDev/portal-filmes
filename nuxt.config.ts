@@ -18,7 +18,7 @@ export default defineNuxtConfig({
    runtimeConfig: {
     public: {
       TMDB_TOKEN: process.env.NUXT_PUBLIC_TMDB_TOKEN,
-      USER_ID: process.env.NUXT_USER_ID,
+      BASE_URL: process.env.BASE_URL,
     }
   },
   image: {

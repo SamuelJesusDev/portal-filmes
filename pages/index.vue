@@ -88,7 +88,7 @@ const {
   "film-list",
   async () => {
     const res = await $fetch(
-      "https://api.themoviedb.org/3/discover/movie?language=pt-BR&page=" + page.value,
+      config.public.BASE_URL+"/3/discover/movie?language=pt-BR&page=" + page.value,
       {
         headers: {
           Authorization:

@@ -88,7 +88,7 @@ const {
   "film-info",
   async () => {
     const result = await $fetch(
-      "https://api.themoviedb.org/3/movie/" + idMovie.value +"?language=pt-BR",
+      config.public.BASE_URL+"/3/movie/" + idMovie.value +"?language=pt-BR",
       {
         method: "GET",
         headers: {
@@ -129,7 +129,7 @@ function handleAddFavorite() {
 async function addFavorite1() {
   try {
     const result = await $fetch(
-      'https://api.themoviedb.org/3/account/'+favoritosStore.userToken+'/favorite',
+      config.public.BASE_URL+'/3/account/'+favoritosStore.userToken+'/favorite',
       {
         method: 'POST',
         headers: {

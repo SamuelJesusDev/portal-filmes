@@ -1,41 +1,46 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(null)
-  const isLoggedIn = ref(false)
-  const router = useRouter()
-  const route = useRoute()
+  const tokenCookie = useCookie<string | null>('auth-token', {
+    default: () => null,
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  })
+  
+  const token = useState<string | null>('auth.token', () => tokenCookie.value)
+  const isLoggedIn = computed(() => !!token.value)
 
-  function init() {
-    if (process.client) {
+  async function init() {
+    if (process.client && !token.value) {
       const savedToken = localStorage.getItem('token')
       if (savedToken) {
         token.value = savedToken
-        isLoggedIn.value = true
+        tokenCookie.value = savedToken
       }
     }
   }
 
-  function login(fakeToken: string) {
-    token.value = fakeToken
-    isLoggedIn.value = true
+  function login(authToken: string) {
+    token.value = authToken
+    tokenCookie.value = authToken
+    
     if (process.client) {
-      localStorage.setItem('token', fakeToken)
+      localStorage.setItem('token', authToken)
     }
   }
 
   async function logout() {
     token.value = null
-    isLoggedIn.value = false
+    tokenCookie.value = null
+    
     if (process.client) {
       localStorage.removeItem('token')
     }
   }
 
   return {
-    token,
+    token: readonly(token),
     isLoggedIn,
     init,
     login,

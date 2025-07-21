@@ -1,75 +1,74 @@
-# Nuxt Minimal Starter 
+# Portal de Filmes
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Sobre o Projeto
 
-## Setup
+Portal web moderno para navegação em catálogo de filmes com dados da API TMDB. Desenvolvido com Nuxt 3, oferece experiência fluida e responsiva para visualizar detalhes, avaliações de filmes.
 
-Make sure to install dependencies:
+## Tecnologias
+
+- **Nuxt 3** - Framework full-stack com SSR e rotas automáticas
+- **Vue 3 + TypeScript** - Framework reativo com tipagem estática  
+- **Pinia** - Gerenciador de estado
+- **TMDB API** - Dados de filmes e trailers
+- **Bootstrap CSS** - Estilização responsiva
+- **Autenticação** - Controle via localStorage
+
+## Funcionalidades
+
+- Catálogo de filmes dinâmico
+- Detalhes e avaliações
+- Sistema de login e favoritos
+- Layout responsivo
+
+## Pré-requisitos
+
+- **Node.js** 18.x+
+- **Git**
+- Gerenciador de pacotes (npm/yarn)
 
 ```bash
-# npm
+node --version
+npm --version
+```
+
+## Instalação e Execução
+
+```bash
+# Clone o repositório
+git clone https://github.com/SamuelJesusDev/portal-filmes.git
+cd portal-filmes
+
+# Instale dependências
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
+# ou
 yarn install
 
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
+# Execute em desenvolvimento
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
+# ou  
 yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+**Aplicação:** http://localhost:3000  
+**Login:** usuário `admin` / senha `123`
 
-Build the application for production:
+## Scripts
 
-```bash
-# npm
-npm run build
+| Script | Descrição |
+|--------|-----------|
+| `dev` | Servidor de desenvolvimento |
+| `build` | Build de produção |
+| `preview` | Preview do build local |
 
-# pnpm
-pnpm build
+## Sugestões de Melhorias Futuras
 
-# yarn
-yarn build
+### Funcionais
+-  Autenticação real (Firebase/Auth0)
+-  Favoritos persistentes por usuário
+-  Busca avançada com filtros
+-  Suporte multilíngue (i18n)
 
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### Técnicas  
+- Adicionar testes automatizados
+- Segurança aprimorada
+---
