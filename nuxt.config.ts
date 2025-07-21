@@ -9,9 +9,33 @@ export default defineNuxtConfig({
   },
   modules: [
     '@pinia/nuxt',
-    'pinia-plugin-persistedstate/nuxt'
-  ],
+    'pinia-plugin-persistedstate/nuxt',
+    '@nuxt/image-edge'
+  ],  
   pinia:{
     storesDirs:['./stores/**']
-  }
+  },
+   runtimeConfig: {
+    public: {
+      TMDB_TOKEN: process.env.NUXT_PUBLIC_TMDB_TOKEN,
+      USER_ID: process.env.NUXT_USER_ID,
+    }
+  },
+  image: {
+    domains: ['image.tmdb.org'],
+    presets: {
+      movie: {
+        modifiers: {
+          format: 'webp',
+          width: 160,
+          height: 240
+        }
+      }
+    }
+  },
+  vite: {
+    build: {
+      minify: 'esbuild',
+    },
+  },
 })

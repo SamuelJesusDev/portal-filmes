@@ -1,7 +1,7 @@
 <template>
   <div>
-    <span v-for="i in fullStars" :key="'full-' + i">★</span>
-    <span v-for="i in emptyStars" :key="'empty-' + i">☆</span>
+    <span v-for="i in fullStars" :key="'full-' + i"><FontAwesomeIcon icon="fas fa-star" /></span>
+    <span v-for="i in emptyStars" :key="'empty-' + i"><FontAwesomeIcon icon="far fa-star" /></span>
   </div>
 </template>
 
@@ -35,7 +35,7 @@ watchEffect(() => {
 
 <style scoped>
 span {
-  font-size: 24px;
+  font-size: 12px;
   color: gold;
 }
 </style>

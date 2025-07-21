@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
-    <div class="container-main d-flex justify-content-center">
+  <div class="container py-5">
+    <div class="container-main d-flex flex-column align-items-center justify-content-center">
       <h2>Meus Favoritos</h2>
       <div v-if="favoritos.length === 0">
-        <p>Você ainda não adicionou nenhum filme aos favoritos.</p>
+        <h5>Você ainda não adicionou nenhum filme aos favoritos.</h5>
       </div>
     </div>
     
@@ -15,11 +15,14 @@
             :key="index"
           >
           <NuxtLink :to="'/item/' + movie.id + '-' + slugify(movie.title)">
-            <img
-              :src="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-              style="max-width: 160px"
-              loading="lazy"              
-            />
+          <NuxtImg
+            :src="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+            width="160"
+            height="240"
+            format="webp"
+            loading="lazy"
+            :alt="movie.title"
+          />
             <div class="overlay">
               <div class="d-flex gap-1 mb-auto">
                 <h6><span class="badge badge-primary mr-2">{{movie.original_language.toUpperCase()}}</span></h6>
@@ -73,7 +76,6 @@
 </template>
 
 <script setup>
-import { useApiTokenStore } from '~/store/apiToken'
 import { useFavoritosStore } from '~/store/favoritos'
 useHead({
   title: 'Meus Favoritos - Catálogo de Filmes',
@@ -87,8 +89,7 @@ useHead({
 const page = ref(1);
 const totalPages = ref(0);
 const favoritosStore = useFavoritosStore();
-const apiTokenStore = useApiTokenStore()
-const tokenApi = apiTokenStore.token
+const config = useRuntimeConfig()
 const { favoritos, removeFavorite } = favoritosStore
 
 const {
@@ -105,7 +106,7 @@ const {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer " + tokenApi.value,
+            "Bearer " + config.public.TMDB_TOKEN,
         },
       }
     );
