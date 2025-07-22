@@ -33,9 +33,14 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout() {
     token.value = null
     tokenCookie.value = null
-    
+    const route = useRoute()
+    const protectedRoutes = ['/favoritos']
+
     if (process.client) {
       localStorage.removeItem('token')
+    }
+    if (protectedRoutes.includes(route.path)) {
+      await navigateTo('/login')
     }
   }
 
